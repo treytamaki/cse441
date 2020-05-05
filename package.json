@@ -1,6 +1,6 @@
-{ 
+{
   "homepage": "http://treytamaki.github.io/cse441",
-  "name": "react-gh-pages",
+  "name": "cse441",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
