@@ -1,17 +1,22 @@
 {
-  "homepage": "http://treytamaki.github.io/cse441",
-  "name": "cse441",
+  "name": "firedux-todo",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.8.3",
-    "react-dom": "^16.8.3",
-    "react-scripts": "2.1.5"
+    "firebase": "^5.7.2",
+    "lodash": "^4.17.11",
+    "materialize-css": "^1.0.0",
+    "mic-recorder-to-mp3": "^2.2.1",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-redux": "^6.0.0",
+    "react-scripts": "2.1.3",
+    "react-webcam": "^5.0.1",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
