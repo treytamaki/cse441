@@ -1,8 +1,14 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
+
 import  { useState } from "react";
+import * as actions from './actions';
+import _ from 'lodash';
 
 import List from './components/List';
 import "./App.css";
+
+import { storage } from './config/firebase';
 
 const userType = ["Instructor", "Student"];
 const classNames = ["Intermediate Yoga", "Experienced Martial Arts", "Beginner Tai Chi"]
@@ -14,8 +20,14 @@ class App extends Component {
     this.state = {
       name: null,
       chosenClass: null,
-      chosenUserType: null
+      chosenUserType: null,
+      movementStatus: false,
     };
+  }
+
+  componentWillMount() {
+    this.props.fetchStarts();
+    this.checkMovement();    
   }
   
   setName() {
@@ -24,8 +36,46 @@ class App extends Component {
     });
   }
 
+  startMovement() {
+    const {data} = this.props;
+    const {addStart} = this.props;   
+
+    let firebaseKey = "";
+    let firebaseStatus = false;
+    _.forEach(data, (value, key) => {
+      // console.log(this.state.chosenClass, "===", value.class)
+      if (this.state.chosenClass === value.class) {
+        firebaseKey = key;
+        firebaseStatus = value.status;
+      }
+    });
+    this.setState({ movementStatus: firebaseStatus});
+
+    addStart({
+      firebaseKey: firebaseKey,
+      class: this.state.chosenClass,
+      status: firebaseStatus,
+    });
+  }
+
+  checkMovement() {
+    const {data} = this.props;
+    const {addStart} = this.props;   
+
+    let firebaseKey = "";
+    let firebaseStatus = false;
+    _.forEach(data, (value, key) => {
+      if (this.state.chosenClass === value.class) {
+        firebaseKey = key;
+        firebaseStatus = value.status;
+      }
+    });
+    console.log("CHECK", firebaseStatus);
+    return firebaseStatus;
+  }
 
   render() {
+    
     let classes = [];
     classNames.forEach(name => 
       classes.push(<div onClick={() => { this.setState({ chosenClass: name })}} className="blue "
@@ -36,11 +86,12 @@ class App extends Component {
       </div>)
     );
 
+    // LOGIN PAGE
     if (!this.state || this.state.name === null) {
       return (
         <div>
           <h1>Exercise Workshop!</h1>
-          <h2 >Username: </h2>
+          <h3 >Username: </h3>
           <input id="name"/>
             {userType.map(type => (
               <div 
@@ -51,9 +102,9 @@ class App extends Component {
               </div>
             ))}
           <h6 onClick={() => { this.setName()}}>Submit</h6>
-          
         </div>
       );
+    // CLASS SELECTION
     } else if (this.state.chosenClass === null) {
       return (
         <div>
@@ -64,30 +115,52 @@ class App extends Component {
           </div>
         </div>
       )
-
+    // INSIDE CLASS
     } else {
-      if (true) {
+      // INSTRUCTOR VIEW
+      if (this.state.chosenUserType === "Instructor") {
+        // LOOK AT STREAM
         return (
           <div>
-            <iframe src="http://localhost:3080/"></iframe>
+            <iframe src = "http://localhost:3080"></iframe>
+            <button onClick={() => {this.startMovement()}}>GO LIVE</button>
+            <ul>
+              <li><a href= 'http://localhost:8000/stream' >Start Movement</a></li>
+              {/* <li><a href= 'http://localhost:8000/view'>View Live</a></li> */}
+            </ul>
           </div>
         );
       } else {
-
-        return (
-          <div>
-            <div className="container">
-              <h3>Welcome {this.state.name}!</h3>
-              <h4>Class: {this.state.chosenClass}</h4>
-              <List username={this.state.name} 
-                    chosenClass={this.state.chosenClass} 
-                    userType={this.state.chosenUserType}
-              />
+      // STUDENT VIEW
+        if (this.checkMovement()) {
+          // SUBMIT MOVEMENT
+          return (
+            <div>
+              <div className="container">
+                <h3>Welcome {this.state.name}!</h3>
+                <h4>Class: {this.state.chosenClass}</h4>
+                <List username={this.state.name} 
+                      chosenClass={this.state.chosenClass} 
+                      userType={this.state.chosenUserType}
+                />
+              </div>
             </div>
-          </div>
-        );
+          );
+        } else {
+          return (
+            <div>
+              <iframe src = "http://localhost:3080"></iframe>
+            </div>
+          );
+        }
       }
     }
   }
 }
-export default App;
+const mapStateToProps = ({data}) => {
+  return {
+    data
+  }
+}
+
+export default connect(mapStateToProps, actions)(App);

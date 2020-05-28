@@ -32,7 +32,6 @@ class List extends Component {
   }
 
   formSubmit = () => {
-    // console.log("SUBMIT", this.state)
     const {addToDo} = this.props;    
 
     const {formValue} = this.state;

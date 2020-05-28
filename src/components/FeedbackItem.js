@@ -50,51 +50,46 @@ class FeedbackItem extends Component {
     const {addFeedback} = this.props;    
     
 
-    // Mp3Recorder
-    //   .stop()
-    //   .getMp3()
-    //   .then(([buffer, blob]) => {
-    //     const blobURL = URL.createObjectURL(blob)
-    //     this.setState({ blobURL, isRecording: false });
+    Mp3Recorder
+      .stop()
+      .getMp3()
+      .then(([buffer, blob]) => {
+        const blobURL = URL.createObjectURL(blob)
+        this.setState({ blobURL, isRecording: false });
         
-    //     const audioFileName = this.props.username + "-" + this.props.todo.title + "-" + this.props.todo.className + "-" + this.props.todo.timestamp;
+        const audioFileName = this.props.username + "-" + this.props.todo.title + "-" + this.props.todo.className + "-" + this.props.todo.timestamp;
 
-    //     // console.log("STATE", this.state)        
-    //     // console.log("PROPS", this.props)
-    //     // console.log("blob", blob)
-    //     // console.log("audioFileName", audioFileName)
-
-    //     const uploadTask = storage.ref(`audios/${audioFileName}`).put(blob);
-    //     uploadTask.on('state_changed', 
-    //       (snapshot) => {
-    //         const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-    //         this.setState({progress});
-    //       }, 
-    //       (error) => {
-    //         console.log(error);
-    //       }, 
-    //     () => {
-    //       storage.ref('audios').child(audioFileName).getDownloadURL().then(url => {
-    //         console.log(this.state);
-    //         const time = new Date() + "";
+        const uploadTask = storage.ref(`audios/${audioFileName}`).put(blob);
+        uploadTask.on('state_changed', 
+          (snapshot) => {
+            const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            this.setState({progress});
+          }, 
+          (error) => {
+            console.log(error);
+          }, 
+        () => {
+          storage.ref('audios').child(audioFileName).getDownloadURL().then(url => {
+            console.log(this.state);
+            const time = new Date() + "";
             
-    //         addFeedback({
-    //           instructor: this.props.username, 
-    //           student: this.props.todo.title,
-    //           className: this.props.todo.className, 
-    //           audioUrl: url, 
-    //           timestamp: time,
-    //         });
+            addFeedback({
+              instructor: this.props.username, 
+              student: this.props.todo.title,
+              className: this.props.todo.className, 
+              audioUrl: url, 
+              timestamp: time,
+            });
 
-    //         this.setState({
-    //           isRecording: false,
-    //           blobURL: '',
-    //           isBlocked: false
-    //         });
-    //       })  
-    //     });
+            this.setState({
+              isRecording: false,
+              blobURL: '',
+              isBlocked: false
+            });
+          })  
+        });
 
-    //   }).catch((e) => console.log(e));
+      }).catch((e) => console.log(e));
   };
 
   completeClick = completeTodoId => {
