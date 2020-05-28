@@ -4,14 +4,13 @@ import  { useState } from "react";
 import List from './components/List';
 import "./App.css";
 
-const userType = ["instructor", "student"];
+const userType = ["Instructor", "Student"];
 const classNames = ["Intermediate Yoga", "Experienced Martial Arts", "Beginner Tai Chi"]
 
 class App extends Component {
   
   constructor(props) {
     super(props);
-  
     this.state = {
       name: null,
       chosenClass: null,
@@ -27,7 +26,6 @@ class App extends Component {
 
 
   render() {
-
     let classes = [];
     classNames.forEach(name => 
       classes.push(<div onClick={() => { this.setState({ chosenClass: name })}} className="blue "
@@ -41,7 +39,8 @@ class App extends Component {
     if (!this.state || this.state.name === null) {
       return (
         <div>
-          <h1 >Username: </h1>
+          <h1>Exercise Workshop!</h1>
+          <h2 >Username: </h2>
           <input id="name"/>
             {userType.map(type => (
               <div 
@@ -52,6 +51,7 @@ class App extends Component {
               </div>
             ))}
           <h6 onClick={() => { this.setName()}}>Submit</h6>
+          
         </div>
       );
     } else if (this.state.chosenClass === null) {
@@ -64,17 +64,29 @@ class App extends Component {
           </div>
         </div>
       )
+
     } else {
-      return (
-        <div>
-          <div className="container">
-            <h3>Welcome {this.state.name}!</h3>
-            <h4>Class: {this.state.chosenClass}</h4>
-            {console.log(this.state)}
-            <List username={this.state.name} chosenClass={this.state.chosenClass} userType={this.state.chosenUserType}/>
+      if (true) {
+        return (
+          <div>
+            <iframe src="http://localhost:3080/"></iframe>
           </div>
-        </div>
-      );
+        );
+      } else {
+
+        return (
+          <div>
+            <div className="container">
+              <h3>Welcome {this.state.name}!</h3>
+              <h4>Class: {this.state.chosenClass}</h4>
+              <List username={this.state.name} 
+                    chosenClass={this.state.chosenClass} 
+                    userType={this.state.chosenUserType}
+              />
+            </div>
+          </div>
+        );
+      }
     }
   }
 }

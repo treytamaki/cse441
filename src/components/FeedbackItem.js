@@ -4,17 +4,9 @@ import {addFeedback} from '../actions';
 
 import { storage } from '../config/firebase';
 
-
 import MicRecorder from 'mic-recorder-to-mp3';
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
-
-// class RecordButton extends Component {
-//   render() {
-//     return(
-//     );
-//   }
-// }
 
 class FeedbackItem extends Component {
   constructor(props) {
@@ -29,80 +21,80 @@ class FeedbackItem extends Component {
   
 
   componentDidMount() {
-    navigator.getUserMedia({ audio: true },
-      () => {
-        console.log('Permission Granted');
-        this.setState({ isBlocked: false });
-      },
-      () => {
-        console.log('Permission Denied');
-        this.setState({ isBlocked: true })
-      },
-    );
+    // navigator.getUserMedia({ audio: true },
+    //   () => {
+    //     console.log('Permission Granted');
+    //     this.setState({ isBlocked: false });
+    //   },
+    //   () => {
+    //     console.log('Permission Denied');
+    //     this.setState({ isBlocked: true })
+    //   },
+    // );
   }
 
 
   start = () => {
-    if (this.state.isBlocked) {
-      console.log('Permission Denied');
-    } else {
-      Mp3Recorder
-        .start()
-        .then(() => {
-          this.setState({ isRecording: true });
-        }).catch((e) => console.error(e));
-    }
+    // if (this.state.isBlocked) {
+    //   console.log('Permission Denied');
+    // } else {
+    //   Mp3Recorder
+    //     .start()
+    //     .then(() => {
+    //       this.setState({ isRecording: true });
+    //     }).catch((e) => console.error(e));
+    // }
   };
 
   stop = () => {
     const {addFeedback} = this.props;    
     
 
-    Mp3Recorder
-      .stop()
-      .getMp3()
-      .then(([buffer, blob]) => {
-        const blobURL = URL.createObjectURL(blob)
-        this.setState({ blobURL, isRecording: false });
+    // Mp3Recorder
+    //   .stop()
+    //   .getMp3()
+    //   .then(([buffer, blob]) => {
+    //     const blobURL = URL.createObjectURL(blob)
+    //     this.setState({ blobURL, isRecording: false });
         
-        const audioFileName = this.props.username + "-" + this.props.todo.title + "-" + this.props.todo.className + "-" + this.props.todo.timestamp;
+    //     const audioFileName = this.props.username + "-" + this.props.todo.title + "-" + this.props.todo.className + "-" + this.props.todo.timestamp;
 
-        // console.log("STATE", this.state)        
-        // console.log("PROPS", this.props)
-        // console.log("blob", blob)
-        // console.log("audioFileName", audioFileName)
+    //     // console.log("STATE", this.state)        
+    //     // console.log("PROPS", this.props)
+    //     // console.log("blob", blob)
+    //     // console.log("audioFileName", audioFileName)
 
-        const uploadTask = storage.ref(`audios/${audioFileName}`).put(blob);
-        uploadTask.on('state_changed', 
-          (snapshot) => {
-            const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-            this.setState({progress});
-          }, 
-          (error) => {
-            console.log(error);
-          }, 
-        () => {
-          storage.ref('audios').child(audioFileName).getDownloadURL().then(url => {
-            console.log(this.state);
-            const time = new Date() + "";
+    //     const uploadTask = storage.ref(`audios/${audioFileName}`).put(blob);
+    //     uploadTask.on('state_changed', 
+    //       (snapshot) => {
+    //         const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+    //         this.setState({progress});
+    //       }, 
+    //       (error) => {
+    //         console.log(error);
+    //       }, 
+    //     () => {
+    //       storage.ref('audios').child(audioFileName).getDownloadURL().then(url => {
+    //         console.log(this.state);
+    //         const time = new Date() + "";
             
-            addFeedback({
-              instructor: this.props.username, 
-              student: this.props.todo.title,
-              className: this.props.todo.className, 
-              audioUrl: url, 
-              timestamp: time,
-            });
+    //         addFeedback({
+    //           instructor: this.props.username, 
+    //           student: this.props.todo.title,
+    //           className: this.props.todo.className, 
+    //           audioUrl: url, 
+    //           timestamp: time,
+    //         });
 
-            this.setState({
-              isRecording: false,
-              blobURL: '',
-              isBlocked: false
-            });
-          })  
-        });
+    //         this.setState({
+    //           isRecording: false,
+    //           blobURL: '',
+    //           isBlocked: false
+    //         });
+    //       })  
+    //     });
 
-      }).catch((e) => console.log(e));
+    //   }).catch((e) => console.log(e));
   };
 
   completeClick = completeTodoId => {
