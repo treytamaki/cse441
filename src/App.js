@@ -52,6 +52,11 @@ class App extends Component {
               </div>
             ))}
           <h6 onClick={() => { this.setName()}}>Submit</h6>
+          <ul>
+            <li><a href= 'http://localhost:8000/stream'>Go Live</a></li>
+            <li><a href= 'http://localhost:8000/view'>View Live</a></li>
+        </ul>
+        <iframe src = "http://localhost:8000/view"></iframe>
         </div>
       );
     } else if (this.state.chosenClass === null) {
