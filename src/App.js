@@ -18,7 +18,6 @@ class App extends Component {
   
   constructor(props) {
     super(props);
-  
     this.state = {
       name: null,
       chosenClass: null,
@@ -68,8 +67,29 @@ class App extends Component {
   }
 
 
-  render() {
+    this.setState({ movementStatus: firebaseStatus});
+    addStart({
+      firebaseKey: firebaseKey,
+      class: this.state.chosenClass,
+      status: firebaseStatus,
+    });
+  }
 
+  checkMovement() {
+    const {data} = this.props;
+    const {addStart} = this.props;   
+
+    let firebaseStatus = false;
+    _.forEach(data, (value, key) => {
+      if (this.state.chosenClass === value.class) {
+        firebaseStatus = value.status;
+      }
+    });
+    return firebaseStatus;
+  }
+
+  render() {
+    
     let classes = [];
     classNames.forEach(name => 
       classes.push(<div onClick={() => { this.setState({ chosenClass: name })}} className="blue "
@@ -84,7 +104,8 @@ class App extends Component {
     if (!this.state || this.state.name === null) {
       return (
         <div>
-          <h1 >Username: </h1>
+          <h1>Exercise Workshop!</h1>
+          <h3 >Username: </h3>
           <input id="name"/>
             {userType.map(type => (
               <div 

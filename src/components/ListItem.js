@@ -9,13 +9,7 @@ class ListItem extends Component {
     completeToDo(completeTodoId);
   };
 
-  // componentWillMount() {
-  //   this.props.fetchAudios();
-  // }
-
   render() {
-    console.log("STate", this.state);
-    console.log("Props", this.props);
     
     const{todoId, todo} = this.props;
     return (
@@ -37,11 +31,5 @@ class ListItem extends Component {
     );
   }
 }
-
-// const mapStateToProps = ({love}) => {
-//   return {
-//     love
-//   }
-// }
 
 export default connect(null, {completeToDo})(ListItem);

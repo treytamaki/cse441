@@ -8,6 +8,12 @@ const startsRef = databaseRef.child("starts")
 export const addStart = newToDo => async dispatch => {
   // startsRef.push().set(newToDo);
   databaseRef.child("starts").child("-"+newToDo.classId).update({ status: newToDo.status });
+  // const classStartRef = databaseRef.child("starts/" + newToDo.firebaseKey);
+  // startsRef.push().update({
+  //   firebaseKey: newToDo.firebaseKey,
+  //   class: newToDo.class,
+  //   status: !newToDo.status,
+  // });
 };
 
 export const fetchStarts = () => async dispatch => {
@@ -30,6 +36,8 @@ export const addFeedback = newToDo => async dispatch => {
 export const completeToDo = completeToDoId => async dispatch => {
   todosRef.child(completeToDoId).remove();
 };
+
+
 
 export const fetchToDos = () => async dispatch => {
   todosRef.on("value", snapshot => {
