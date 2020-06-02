@@ -26,7 +26,7 @@ class App extends Component {
   }
 
   componentWillMount() {
-    this.props.fetchStarts();
+    // this.props.fetchStarts();
     this.checkMovement();    
   }
   
@@ -38,19 +38,20 @@ class App extends Component {
 
   startMovement() {
     const {data} = this.props;
-    const {addStart} = this.props;   
-
+    const {addStart, fetchStarts} = this.props;   
+    let pb = fetchStarts();
     let firebaseKey = "";
     let firebaseStatus = false;
-    _.forEach(data, (value, key) => {
-      // console.log(this.state.chosenClass, "===", value.class)
+    console.log(this.state);
+    console.log(this.props);
+    _.forEach(data, (value, key) => {      
       if (this.state.chosenClass === value.class) {
         firebaseKey = key;
         firebaseStatus = value.status;
       }
     });
-    this.setState({ movementStatus: firebaseStatus});
 
+    this.setState({ movementStatus: firebaseStatus});
     addStart({
       firebaseKey: firebaseKey,
       class: this.state.chosenClass,
@@ -62,15 +63,12 @@ class App extends Component {
     const {data} = this.props;
     const {addStart} = this.props;   
 
-    let firebaseKey = "";
     let firebaseStatus = false;
     _.forEach(data, (value, key) => {
       if (this.state.chosenClass === value.class) {
-        firebaseKey = key;
         firebaseStatus = value.status;
       }
     });
-    console.log("CHECK", firebaseStatus);
     return firebaseStatus;
   }
 
@@ -120,16 +118,33 @@ class App extends Component {
       // INSTRUCTOR VIEW
       if (this.state.chosenUserType === "Instructor") {
         // LOOK AT STREAM
-        return (
-          <div>
-            <iframe src = "http://localhost:3080"></iframe>
-            <button onClick={() => {this.startMovement()}}>GO LIVE</button>
-            <ul>
-              <li><a href= 'http://localhost:8000/stream' >Start Movement</a></li>
-              {/* <li><a href= 'http://localhost:8000/view'>View Live</a></li> */}
-            </ul>
-          </div>
-        );
+        if (false) {//this.checkMovement()) {
+          return (
+            <div>
+              <iframe src = "http://localhost:3080"></iframe>
+              <button onClick={() => {this.startMovement()}}>Start Movement</button>
+              <ul>
+                {/* <li><a href= 'http://localhost:8000/stream' >Start Movement</a></li> */}
+                {/* <li><a href= 'http://localhost:8000/view'>View Live</a></li> */}
+              </ul>
+            </div>
+          );
+        // LOOK AT ALL PHOTOS
+        } else {
+          console.log("BANANA")
+          return (
+            <div>
+              <div className="container">
+                <h3>Welcome {this.state.name}!</h3>
+                <h4>Class: {this.state.chosenClass}</h4>
+                <List username={this.state.name} 
+                      chosenClass={this.state.chosenClass} 
+                      userType={this.state.chosenUserType}
+                />
+              </div>
+            </div>
+          );
+        }
       } else {
       // STUDENT VIEW
         if (this.checkMovement()) {
@@ -157,6 +172,7 @@ class App extends Component {
     }
   }
 }
+
 const mapStateToProps = ({data}) => {
   return {
     data

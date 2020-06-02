@@ -9,6 +9,8 @@ import "./style.css";
 
 import { storage } from '../config/firebase';
 
+const APP_NAME = "";
+
 class List extends Component {
   constructor(props) {
     super(props);
@@ -44,13 +46,10 @@ class List extends Component {
         this.setState({progress});
       }, 
       (error) => {
-        console.log(error);
       }, 
     () => {
       storage.ref('images').child(photo.name).getDownloadURL().then(url => {
-        console.log(this.state);
         const time = new Date() + "";
-        
         addToDo({
           title: this.props.username, 
           className: this.props.chosenClass, 
@@ -67,27 +66,25 @@ class List extends Component {
     const {formValue} = this.state;
     return (
       <div id="todo-add-form" className="col s10 offset-s1">
-        {/* <form onSubmit={this.formSubmit}> */}
           <div className="input-field">
             <input value={formValue} onChange={this.inputChange} id="toDoNext" type="text"/>
             <input type="file" name="myImage" onChange={this.handleChangeImage} accept="image/*" />
             <button onClick={this.formSubmit}>Upload</button>
             <label htmlFor="toDoNext">Comments</label>
           </div>
-        {/* </form> */}
       </div>
     );
   };
 
   renderToDo() {
-    console.log("RENDER TODO", _);
     const {data} = this.props;
 
     const username = this.props.username;
 
     const toDos =[];
-
+    console.log(data);
     _.forEach(data, (value, key) => {
+      
       let isInstructor = this.props.userType === "instructor";
       let isStudentAndNamed = !isInstructor && value.title === this.props.username;
       let classIsEqual = this.props.chosenClass === value.className;
@@ -118,27 +115,12 @@ class List extends Component {
   }
 
   render() {
-    console.log(this.props);
     const {showForm} = this.state;
     return (
       <div className="to-do-list-container">
         <div className="row">
-          {/* {this.renderForm()}  */}
           {this.renderToDo()}
         </div>
-
-        {/* <div className="fixed-action-btn">
-          <button 
-            onClick={() => this.setState({showForm: !showForm})}
-            className="btn-floating btn-large black darken-4"
-          >
-          {showForm ? (
-            <i className="large material-icons">-</i>
-          ) : (
-            <i className="large material-icons">+</i>
-          )}
-          </button>
-        </div> */}
       </div>
     );
   }

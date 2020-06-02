@@ -1,5 +1,5 @@
 import { databaseRef } from '../config/firebase';
-import {FETCH_TODOS} from './types';
+import {FETCH_TODOS, FETCH_STARTS} from './types';
 
 
 
@@ -8,7 +8,6 @@ const audiosRef = databaseRef.child("audios")
 const startsRef = databaseRef.child("starts")
 
 export const addStart = newToDo => async dispatch => {
-  console.log(newToDo);
   const classStartRef = databaseRef.child("starts/" + newToDo.firebaseKey);
   startsRef.push().update({
     firebaseKey: newToDo.firebaseKey,
@@ -20,7 +19,7 @@ export const addStart = newToDo => async dispatch => {
 export const fetchStarts = () => async dispatch => {
   startsRef.on("value", snapshot => {
     dispatch({
-      type: FETCH_TODOS,
+      type: FETCH_STARTS,
       payload: snapshot.val()
     });
   });
