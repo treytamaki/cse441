@@ -1,11 +1,18 @@
 import React, {Component} from 'react';
-import  { useState } from "react";
+import {connect} from 'react-redux';
+
 
 import List from './components/List';
 import "./App.css";
 
+import _ from 'lodash';
+
+import * as actions from './actions';
+
 const userType = ["instructor", "student"];
 const classNames = ["Intermediate Yoga", "Experienced Martial Arts", "Beginner Tai Chi"]
+
+const classIdForYoga = "M8opR64rBwetB1_u2Sw";
 
 class App extends Component {
   
@@ -15,13 +22,48 @@ class App extends Component {
     this.state = {
       name: null,
       chosenClass: null,
-      chosenUserType: null
+      chosenUserType: null,
+      movementStatus: false
     };
+  }
+
+  componentWillMount() {
+    this.props.fetchStarts();
   }
   
   setName() {
     this.setState({ 
       name: document.getElementById("name").value
+    });
+  }
+
+  startMovement() {
+    const {addStart, fetchStarts} = this.props;
+    // fetchStarts();
+    const {data} = this.props;
+    let firebaseStatus = false;
+    console.log(data)
+    _.forEach(data, (value, key) => {      
+      if (this.state.chosenClass === value.class) {
+        firebaseStatus = !value.status;
+      }
+    });
+    addStart({
+      classId: classIdForYoga,
+      class: this.state.chosenClass,
+      status: firebaseStatus,
+    });
+  }
+
+  getStatusMovement() {
+    // const {fetchStarts} = this.props;
+    // fetchStarts();
+    // console.log("HI")
+    const {data} = this.props;
+    _.forEach(data, (value, key) => {      
+      if (this.state.chosenClass === value.class) {
+        return value.status;
+      }
     });
   }
 
@@ -38,6 +80,7 @@ class App extends Component {
       </div>)
     );
 
+    // LOGIN
     if (!this.state || this.state.name === null) {
       return (
         <div>
@@ -54,11 +97,11 @@ class App extends Component {
           <h6 onClick={() => { this.setName()}}>Submit</h6>
           <ul>
             <li><a href= 'http://localhost:8000/stream'>Go Live</a></li>
-            <li><a href= 'http://localhost:8000/view'>View Live</a></li>
         </ul>
         <iframe src = "http://localhost:8000/view"></iframe>
         </div>
       );
+    // SELECT CLASS
     } else if (this.state.chosenClass === null) {
       return (
         <div>
@@ -69,13 +112,44 @@ class App extends Component {
           </div>
         </div>
       )
+    } else if (!this.getStatusMovement()) {//(this.getStatusMovement()) {
+      // INSTRUCTOR STREAM VIDEO
+      if (this.state.chosenUserType === "instructor") {
+        return (
+          <div>
+            <div className="container">
+              <h3>Welcome {this.state.name}!</h3>
+              <h4>Class: {this.state.chosenClass}</h4>
+              <div>
+                <iframe src="http://localhost:8000/stream" allow="camera"></iframe>
+              </div>
+              <button onClick={() => {this.startMovement()}}>Start Movement</button>
+            </div>
+          </div>
+        );
+      // STUDENT STREAM VIDEO
+      } else {
+        return (
+          <div>
+            <div className="container">
+              <h3>Welcome {this.state.name}!</h3>
+              <h4>Class: {this.state.chosenClass}</h4>
+              <div>
+                <iframe src="http://localhost:8000/view" allow="camera"></iframe>
+              </div>
+            </div>
+          </div>
+        );
+      }
     } else {
+      // SEE ALL VIDEOS USER AND INSTRUCTOR
       return (
         <div>
           <div className="container">
             <h3>Welcome {this.state.name}!</h3>
             <h4>Class: {this.state.chosenClass}</h4>
-            {console.log(this.state)}
+            {this.state.chosenUserType === "instructor" && <button onClick={() => {this.startMovement()}}>Start Movement</button>}
+
             <List username={this.state.name} chosenClass={this.state.chosenClass} userType={this.state.chosenUserType}/>
           </div>
         </div>
@@ -83,4 +157,12 @@ class App extends Component {
     }
   }
 }
-export default App;
+
+const mapStateToProps = ({data}) => {
+  return {
+    data
+  }
+}
+
+export default connect(mapStateToProps, actions)(App);
+

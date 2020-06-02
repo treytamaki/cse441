@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import * as actions from '../actions';
 import ListItem from './ListItem';
 import FeedbackItem from './FeedbackItem';
+
+import * as actions from '../actions';
 
 import "./style.css";
 
@@ -81,9 +82,8 @@ class List extends Component {
   };
 
   renderToDo() {
-    console.log("RENDER TODO", _);
+    
     const {data} = this.props;
-
     const username = this.props.username;
 
     const toDos =[];
@@ -119,27 +119,12 @@ class List extends Component {
   }
 
   render() {
-    console.log(this.props);
     const {showForm} = this.state;
     return (
       <div className="to-do-list-container">
         <div className="row">
-          {/* {this.renderForm()}  */}
           {this.renderToDo()}
         </div>
-
-        {/* <div className="fixed-action-btn">
-          <button 
-            onClick={() => this.setState({showForm: !showForm})}
-            className="btn-floating btn-large black darken-4"
-          >
-          {showForm ? (
-            <i className="large material-icons">-</i>
-          ) : (
-            <i className="large material-icons">+</i>
-          )}
-          </button>
-        </div> */}
       </div>
     );
   }

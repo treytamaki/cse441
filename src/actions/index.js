@@ -1,21 +1,33 @@
 import { databaseRef } from '../config/firebase';
-import {FETCH_TODOS} from './types';
+import {FETCH_TODOS, FETCH_STARTS} from './types';
 
 const todosRef = databaseRef.child("todos")
 const audiosRef = databaseRef.child("audios")
+const startsRef = databaseRef.child("starts")
+
+export const addStart = newToDo => async dispatch => {
+  // startsRef.push().set(newToDo);
+  databaseRef.child("starts").child("-"+newToDo.classId).update({ status: newToDo.status });
+};
+
+export const fetchStarts = () => async dispatch => {
+  startsRef.on("value", snapshot => {
+    dispatch({
+      type: FETCH_STARTS,
+      payload: snapshot.val()
+    });
+  });
+};
 
 export const addToDo = newToDo => async dispatch => {
-  console.log(newToDo);
   todosRef.push().set(newToDo);
 };
 
 export const addFeedback = newToDo => async dispatch => {
-  console.log(newToDo);
   audiosRef.push().set(newToDo);
 };
 
 export const completeToDo = completeToDoId => async dispatch => {
-  console.log(completeToDoId);
   todosRef.child(completeToDoId).remove();
 };
 
