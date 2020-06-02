@@ -59,15 +59,19 @@ class App extends Component {
     // fetchStarts();
     // console.log("HI")
     const {data} = this.props;
+    const {addStart} = this.props;
+    var firebaseStatus = false;
+    var firebaseKey = "";
+
     _.forEach(data, (value, key) => {      
       if (this.state.chosenClass === value.class) {
         return value.status;
       }
     });
-  }
+  
 
 
-    this.setState({ movementStatus: firebaseStatus});
+    // this.setState({ movementStatus: firebaseStatus});
     addStart({
       firebaseKey: firebaseKey,
       class: this.state.chosenClass,
