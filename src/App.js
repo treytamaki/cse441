@@ -1,12 +1,10 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-
-
 import List from './components/List';
 import "./App.css";
-
 import _ from 'lodash';
 
+import { databaseRef } from './config/firebase';
 import * as actions from './actions';
 
 const userType = ["instructor", "student"];
@@ -15,19 +13,27 @@ const classNames = ["Intermediate Yoga", "Experienced Martial Arts", "Beginner T
 const classIdForYoga = "M8opR64rBwetB1_u2Sw";
 
 class App extends Component {
-  
   constructor(props) {
     super(props);
     this.state = {
       name: null,
       chosenClass: null,
       chosenUserType: null,
-      movementStatus: false
+      movementStatus: [],
     };
   }
 
   componentWillMount() {
-    this.props.fetchStarts();
+    let yogaStarts = databaseRef.child("starts").child("-" + classIdForYoga);
+    yogaStarts.on("value", snapshot => {
+      this.setState({movementStatus: snapshot.val()})
+    });
+
+    let audioRef = databaseRef.child("audios");
+    audioRef.on("value", snapshot => {
+      // this.setState({movementStatus: snapshot.val()})
+      this.setState({audios: snapshot.val()})
+    });
   }
   
   setName() {
@@ -38,15 +44,15 @@ class App extends Component {
 
   startMovement() {
     const {addStart, fetchStarts} = this.props;
-    // fetchStarts();
+    fetchStarts();
     const {data} = this.props;
-    let firebaseStatus = false;
-    console.log(data)
+    let firebaseStatus = false;    
     _.forEach(data, (value, key) => {      
       if (this.state.chosenClass === value.class) {
-        firebaseStatus = !value.status;
+        firebaseStatus = value.status;
       }
     });
+
     addStart({
       classId: classIdForYoga,
       class: this.state.chosenClass,
@@ -55,34 +61,39 @@ class App extends Component {
   }
 
   getStatusMovement() {
-    // const {fetchStarts} = this.props;
-    // fetchStarts();
-    // console.log("HI")
-    const {data} = this.props;
-    const {addStart} = this.props;
-    var firebaseStatus = false;
-    var firebaseKey = "";
+    return this.state.movementStatus.status;
+  }
 
-    _.forEach(data, (value, key) => {      
-      if (this.state.chosenClass === value.class) {
-        return value.status;
+  getAudioFeedback() {
+    if (!(this.state.chosenUserType === "student")) {
+      return false;
+    }
+    let audios = this.state.audios;
+    
+
+    let currentName = this.state.name;
+    let currentClass = this.state.chosenClass;
+
+    let audioUrl = null;
+
+    Object.keys(audios).forEach( function (key) { 
+      // console.log(audio);
+      
+      let fbStudentName = audios[key].student;
+      let fbClassName = audios[key].className;
+
+      console.log(fbStudentName === currentName);
+      console.log(fbClassName === currentClass);
+      if (fbStudentName === currentName && fbClassName === currentClass) {
+        audioUrl = audios[key].audioUrl;
       }
     });
-  
-
-
-    // this.setState({ movementStatus: firebaseStatus});
-    addStart({
-      firebaseKey: firebaseKey,
-      class: this.state.chosenClass,
-      status: firebaseStatus,
-    });
+    return audioUrl;
   }
 
   checkMovement() {
     const {data} = this.props;
     const {addStart} = this.props;   
-
     let firebaseStatus = false;
     _.forEach(data, (value, key) => {
       if (this.state.chosenClass === value.class) {
@@ -93,7 +104,7 @@ class App extends Component {
   }
 
   render() {
-    
+    console.log("firebaseStatus check", this.state.audios);
     let classes = [];
     classNames.forEach(name => 
       classes.push(<div onClick={() => { this.setState({ chosenClass: name })}} className="blue "
@@ -121,9 +132,9 @@ class App extends Component {
             ))}
           <h6 onClick={() => { this.setName()}}>Submit</h6>
           <ul>
-            <li><a href= 'http://localhost:8000/stream'>Go Live</a></li>
+            {/* <li><a href= 'http://localhost:8000/stream'>Go Live</a></li> */}
         </ul>
-        <iframe src = "http://localhost:8000/view"></iframe>
+        {/* <iframe src = "http://localhost:8000/stream" allow="camera"></iframe> */}
         </div>
       );
     // SELECT CLASS
@@ -137,7 +148,7 @@ class App extends Component {
           </div>
         </div>
       )
-    } else if (!this.getStatusMovement()) {//(this.getStatusMovement()) {
+    } else if (this.getStatusMovement()) {//(this.getStatusMovement()) {
       // INSTRUCTOR STREAM VIDEO
       if (this.state.chosenUserType === "instructor") {
         return (
@@ -165,17 +176,23 @@ class App extends Component {
             </div>
           </div>
         );
+    
       }
     } else {
       // SEE ALL VIDEOS USER AND INSTRUCTOR
+      let audioFeedbackForStudent = this.getAudioFeedback();
+      console.log("RENDER AUDIO", audioFeedbackForStudent);
+      if (audioFeedbackForStudent) {
+        
+      }
+
       return (
         <div>
           <div className="container">
             <h3>Welcome {this.state.name}!</h3>
             <h4>Class: {this.state.chosenClass}</h4>
             {this.state.chosenUserType === "instructor" && <button onClick={() => {this.startMovement()}}>Start Movement</button>}
-
-            <List username={this.state.name} chosenClass={this.state.chosenClass} userType={this.state.chosenUserType}/>
+            <List username={this.state.name} chosenClass={this.state.chosenClass} userType={this.state.chosenUserType} audioUrl={audioFeedbackForStudent}/>
           </div>
         </div>
       );

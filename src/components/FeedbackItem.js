@@ -21,29 +21,29 @@ class FeedbackItem extends Component {
   
 
   componentDidMount() {
-    // navigator.getUserMedia({ audio: true },
-    //   () => {
-    //     console.log('Permission Granted');
-    //     this.setState({ isBlocked: false });
-    //   },
-    //   () => {
-    //     console.log('Permission Denied');
-    //     this.setState({ isBlocked: true })
-    //   },
-    // );
+    navigator.getUserMedia({ audio: true },
+      () => {
+        console.log('Permission Granted');
+        this.setState({ isBlocked: false });
+      },
+      () => {
+        console.log('Permission Denied');
+        this.setState({ isBlocked: true })
+      },
+    );
   }
 
 
   start = () => {
-    // if (this.state.isBlocked) {
-    //   console.log('Permission Denied');
-    // } else {
-    //   Mp3Recorder
-    //     .start()
-    //     .then(() => {
-    //       this.setState({ isRecording: true });
-    //     }).catch((e) => console.error(e));
-    // }
+    if (this.state.isBlocked) {
+      console.log('Permission Denied');
+    } else {
+      Mp3Recorder
+        .start()
+        .then(() => {
+          this.setState({ isRecording: true });
+        }).catch((e) => console.error(e));
+    }
   };
 
   stop = () => {

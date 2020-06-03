@@ -24,9 +24,10 @@ class ListItem extends Component {
           </span>
         </h4>
         <img src={todo.photoUrl}/>
-        <h6>
-          Notes: {todo.comments}
-        </h6>
+        {this.props.audioUrl && <div>
+          <h5>Your feedback has been received:</h5>
+          <audio src={this.props.audioUrl} controls="controls" autoplay /> 
+        </div>}
       </div>
     );
   }

@@ -88,9 +88,8 @@ class List extends Component {
       let isInstructor = this.props.userType === "instructor";
       let isStudentAndNamed = !isInstructor && value.title === this.props.username;
       let classIsEqual = this.props.chosenClass === value.className;
-
       if ((isStudentAndNamed) && classIsEqual) {
-        toDos.push(<ListItem key={key} todoId={key} todo={value} />);
+        toDos.push(<ListItem key={key} todoId={key} todo={value} audioUrl={this.props.audioUrl}/>);
       } else if (isInstructor && classIsEqual) {
         toDos.push(<FeedbackItem username={username} key={key} todoId={key} todo={value} />);
       }

@@ -7,7 +7,8 @@ const startsRef = databaseRef.child("starts")
 
 export const addStart = newToDo => async dispatch => {
   // startsRef.push().set(newToDo);
-  databaseRef.child("starts").child("-"+newToDo.classId).update({ status: newToDo.status });
+  // console.log("NEWTODO", newToDo);
+  databaseRef.child("starts").child("-" + newToDo.classId).update({ status: !newToDo.status, class: newToDo.class });
   // const classStartRef = databaseRef.child("starts/" + newToDo.firebaseKey);
   // startsRef.push().update({
   //   firebaseKey: newToDo.firebaseKey,
