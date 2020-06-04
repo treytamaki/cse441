@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, createRef} from 'react';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import ListItem from './ListItem';
@@ -7,12 +7,20 @@ import FeedbackItem from './FeedbackItem';
 import * as actions from '../actions';
 
 import "./style.css";
+import Webcam from "react-webcam";
+
 
 import { storage } from '../config/firebase';
 
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
+
+
 const APP_NAME = "";
 
+
 class List extends Component {
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -21,6 +29,7 @@ class List extends Component {
       photoValue: null
     };
     this.handleChange = this.handleChangeImage.bind(this);
+    
   }
 
   inputChange = event => {
@@ -34,13 +43,15 @@ class List extends Component {
     }
   }
 
-  formSubmit = () => {
+
+  formSubmit = (photo) => {
     const {addToDo} = this.props;    
 
     const {formValue} = this.state;
-    const photo = this.state.imageTest;
+    // const photo = this.state.screenshot;
+    const time = new Date() + "";
 
-    const uploadTask = storage.ref(`images/${photo.name}`).put(photo);
+    const uploadTask = storage.ref(`images/${time}`).putString(photo, 'data_url');
     uploadTask.on('state_changed', 
       (snapshot) => {
         const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
@@ -49,13 +60,11 @@ class List extends Component {
       (error) => {
       }, 
     () => {
-      storage.ref('images').child(photo.name).getDownloadURL().then(url => {
-        const time = new Date() + "";
+      storage.ref('images').child(time).getDownloadURL().then(url => {
         addToDo({
           title: this.props.username, 
           className: this.props.chosenClass, 
           photoUrl: url, 
-          timestamp: time,
           comments: formValue
         });
         this.setState({formValue: "", imageTest: "", showForm: false});
@@ -64,15 +73,24 @@ class List extends Component {
   };
 
   renderForm = () => {
+    const webcamRef = createRef();
     const {formValue} = this.state;
     return (
-      <div id="todo-add-form" className="col s10 offset-s1">
-          <div className="input-field">
-            <input value={formValue} onChange={this.inputChange} id="toDoNext" type="text"/>
-            <input type="file" name="myImage" onChange={this.handleChangeImage} accept="image/*" />
-            <button onClick={this.formSubmit}>Upload</button>
-            <label htmlFor="toDoNext">Comments</label>
-          </div>
+      <div>
+        <div width="100%"height="50em">
+
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            width="100%"style={{"height":"20em"}}
+          />
+        </div>
+        <div className="centerInsides">
+          <Button variant="primary" onClick={() => {this.formSubmit(webcamRef.current.getScreenshot())}}  style={{"margin-top": "3em"}}>
+            Take Screenshot
+          </Button>
+        </div>
       </div>
     );
   };
@@ -89,9 +107,15 @@ class List extends Component {
       let isStudentAndNamed = !isInstructor && value.title === this.props.username;
       let classIsEqual = this.props.chosenClass === value.className;
       if ((isStudentAndNamed) && classIsEqual) {
-        toDos.push(<ListItem key={key} todoId={key} todo={value} audioUrl={this.props.audioUrl}/>);
+        toDos.push(
+          <ListItem key={key} todoId={key} todo={value} audioUrl={this.props.audioUrl} instructor={this.props.instructor}/>
+        );
       } else if (isInstructor && classIsEqual) {
-        toDos.push(<FeedbackItem username={username} key={key} todoId={key} todo={value} />);
+        toDos.push(
+          <div className="column">
+            <FeedbackItem username={username} key={key} todoId={key} todo={value} />
+          </div>
+        );
       }
     });
 
@@ -101,9 +125,6 @@ class List extends Component {
       return (
         <div>
           {this.renderForm()}
-          <div className="col s10 offset-s1 center-align">
-            <h4>You have not submitted a photo yet</h4>
-          </div>
         </div>
       );
     }
@@ -114,14 +135,21 @@ class List extends Component {
   }
 
   render() {
-    const {showForm} = this.state;
-    return (
-      <div className="to-do-list-container">
+    let {username, chosenClass, userType} = this.props;
+    // GRID
+    if (userType === "instructor") {
+      return (
         <div className="row">
           {this.renderToDo()}
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div className="centerInsides" style={{"margin-top": "3em"}}>
+          {this.renderToDo()}
+        </div>
+      );
+    }
   }
 }
 

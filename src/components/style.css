@@ -38,3 +38,25 @@ input#todoNext:active {
     margin-left: 1;
   }
 }
+.row{
+  display: flex
+}
+
+.column {
+  flex: 50%;
+  padding: 1em;
+}
+
+.textBlack {
+  color:black
+}
+
+#studentSubmitContainer {
+  width: 50%;
+  margin:auto
+}
+/* .centerInsides {
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+} */

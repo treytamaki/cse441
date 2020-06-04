@@ -6,6 +6,10 @@ import { storage } from '../config/firebase';
 
 import MicRecorder from 'mic-recorder-to-mp3';
 
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+
+
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 class FeedbackItem extends Component {
@@ -15,11 +19,11 @@ class FeedbackItem extends Component {
       isRecording: false,
       blobURL: '',
       isBlocked: false,
+      variant: "light",
+      textColor: "black"
     };
   }
-
   
-
   componentDidMount() {
     navigator.getUserMedia({ audio: true },
       () => {
@@ -41,7 +45,7 @@ class FeedbackItem extends Component {
       Mp3Recorder
         .start()
         .then(() => {
-          this.setState({ isRecording: true });
+          this.setState({ isRecording: true});
         }).catch((e) => console.error(e));
     }
   };
@@ -70,7 +74,6 @@ class FeedbackItem extends Component {
           }, 
         () => {
           storage.ref('audios').child(audioFileName).getDownloadURL().then(url => {
-            console.log(this.state);
             const time = new Date() + "";
             
             addFeedback({
@@ -84,7 +87,9 @@ class FeedbackItem extends Component {
             this.setState({
               isRecording: false,
               blobURL: '',
-              isBlocked: false
+              isBlocked: false,
+              variant: "success",
+              textColor: "white"
             });
           })  
         });
@@ -92,36 +97,20 @@ class FeedbackItem extends Component {
       }).catch((e) => console.log(e));
   };
 
-  completeClick = completeTodoId => {
-    // const {completeToDo} = this.props;
-    // completeToDo(completeTodoId);
-  };
 
   render() {
-    const{todoId, todo} = this.props;
+    const{ todoId, todo } = this.props;
+    const {textColor} = this.state;
     return (
-      <div key="toDoName" className="col s10 offset-s1 to-do-list-item black">
-        <h4>
-          {todo.title}
-          <span 
-            onClick={() => this.completeClick(todoId)}
-            className="complete-todo-item waves-effect waves-light blue lighten-5 blue-text text-darken-4 btn"
-          >
+      <Card bg={this.state.variant} style={{"color":textColor}} >
 
-            <button className="large material-icons" onClick={this.start} disabled={this.state.isRecording}>Record</button>
-            <button className="large material-icons" onClick={this.stop} disabled={!this.state.isRecording}>Stop</button>
-
-            {/* /* <RecordButton isRecording={this.state.isRecording}/>  */}
-          </span>
-        </h4>
-
-        {/* <audio src={this.state.blobURL} controls="controls" /> */}
-
-        <img src={todo.photoUrl}/>
-        <h6>
-          Notes: {todo.comments}
-        </h6>
-      </div>
+        <Card.Img variant="top" src={todo.photoUrl} />
+        <Card.Body>
+          <Card.Title>{todo.title}</Card.Title>
+          <Button variant="danger" onClick={this.start} disabled={this.state.isRecording}>Record</Button>
+          <Button variant="dark" onClick={this.stop} disabled={!this.state.isRecording}>Stop</Button> 
+        </Card.Body>
+      </Card>
     );
   }
 }
